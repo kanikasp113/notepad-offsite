@@ -287,12 +287,20 @@ btnEdit.addEventListener("click", async () => {
 
 btnDelete.addEventListener("click", handleDelete);
 
-btnPeek.addEventListener("click", showPeek);
-// Also support hold-to-peek (mousedown/touchstart show, mouseup hide)
-btnPeek.addEventListener("mousedown", showPeek);
-btnPeek.addEventListener("mouseup",   hidePeek);
-btnPeek.addEventListener("touchstart", showPeek, { passive: true });
-btnPeek.addEventListener("touchend",   hidePeek);
+// Click toggles the peek overlay; hold-to-peek shows on press and hides on release.
+// A hold (mousedown → mouseup within the button) suppresses the trailing click so
+// the overlay doesn't immediately reopen.
+let peekHeld = false;
+
+btnPeek.addEventListener("mousedown", () => { peekHeld = true; showPeek(); });
+btnPeek.addEventListener("mouseup", () => { if (peekHeld) { peekHeld = false; hidePeek(); } });
+btnPeek.addEventListener("touchstart", () => { peekHeld = true; showPeek(); }, { passive: true });
+btnPeek.addEventListener("touchend", () => { if (peekHeld) { peekHeld = false; hidePeek(); } });
+btnPeek.addEventListener("click", (e) => {
+  // If we just finished a hold gesture, suppress the click
+  if (!peekOverlay.classList.contains("hidden")) return;
+  showPeek();
+});
 
 btnSave.addEventListener("click", saveNote);
 
