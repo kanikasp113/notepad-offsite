@@ -18,6 +18,7 @@ const titleDisplay    = document.getElementById("note-title-display");
 const bodyDisplay     = document.getElementById("note-body-display");
 const mutationBadge   = document.getElementById("mutation-badge");
 const viewCountLabel  = document.getElementById("view-count-label");
+const noteTimestamps  = document.getElementById("note-timestamps");
 
 const btnNew          = document.getElementById("btn-new");
 const btnEdit         = document.getElementById("btn-edit");
@@ -182,7 +183,7 @@ function renderList() {
         <span class="level-dot level-dot-${level}"></span>${escapeHtml(n.title)}
       </div>
       <div class="note-list-meta">
-        <span>${formatDate(n.updated_at)}</span>
+        <span class="sidebar-time" data-iso="${escapeHtml(n.updated_at || "")}">${relativeTime(n.updated_at)}</span>
         <span class="level-label level-label-${level}">${levelLabel(level)}</span>
         <span>${n.view_count} view${n.view_count !== 1 ? "s" : ""}</span>
       </div>`;
@@ -206,6 +207,13 @@ async function openNote(id) {
   mutationBadge.className = mutationBadgeClass(note.mutation_level);
   mutationBadge.textContent = levelLabel(note.mutation_level);
   viewCountLabel.textContent = `view #${note.view_count}`;
+
+  const createdStr = formatAbsoluteDate(note.created_at);
+  const viewedStr = note.last_viewed_at ? relativeTime(note.last_viewed_at) : "just now";
+  noteTimestamps.innerHTML =
+    `<span class="ts-created">Created ${escapeHtml(createdStr)}</span>` +
+    `<span class="ts-sep">·</span>` +
+    `<span class="ts-viewed" data-iso="${escapeHtml(note.last_viewed_at || "")}">Last viewed ${escapeHtml(viewedStr)}</span>`;
 
   bodyDisplay.classList.toggle("unhinged", note.mutation_level === 3);
 
@@ -338,16 +346,48 @@ function escapeHtml(str) {
   return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
-function formatDate(iso) {
-  if (!iso) return "";
-  // Append "Z" only when the string lacks a timezone indicator.
-  // ISO strings from toISOString() already end with "Z"; appending again
-  // produces an invalid date ("...ZZ").
+function parseIsoDate(iso) {
+  if (!iso) return null;
   const hasTimezone = /Z|[+-]\d{2}:\d{2}$/.test(iso);
   const d = new Date(hasTimezone ? iso : iso + "Z");
-  if (isNaN(d.getTime())) return "";
+  return isNaN(d.getTime()) ? null : d;
+}
+
+function relativeTime(iso) {
+  const d = parseIsoDate(iso);
+  if (!d) return "";
+  const diffMs = Date.now() - d.getTime();
+  const diffSec = Math.floor(diffMs / 1000);
+  if (diffSec < 60) return "just now";
+  const diffMin = Math.floor(diffSec / 60);
+  if (diffMin < 60) return `${diffMin} min ago`;
+  const diffHr = Math.floor(diffMin / 60);
+  if (diffHr < 24) return `${diffHr} hr ago`;
   return d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
 }
+
+function formatDate(iso) {
+  return relativeTime(iso);
+}
+
+function formatAbsoluteDate(iso) {
+  const d = parseIsoDate(iso);
+  if (!d) return "";
+  return d.toLocaleDateString(undefined, { month: "short", day: "numeric" }) +
+    " at " + d.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+}
+
+// ── Live timestamp refresh ────────────────────────────────────────────────────
+setInterval(() => {
+  document.querySelectorAll(".sidebar-time[data-iso]").forEach((el) => {
+    const iso = el.getAttribute("data-iso");
+    if (iso) el.textContent = relativeTime(iso);
+  });
+  document.querySelectorAll(".ts-viewed[data-iso]").forEach((el) => {
+    const iso = el.getAttribute("data-iso");
+    if (iso) el.textContent = `Last viewed ${relativeTime(iso)}`;
+  });
+}, 60000);
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 (async () => {

@@ -200,6 +200,22 @@ button { cursor: pointer; font-family: inherit; font-size: 0.85rem; border-radiu
   font-family: var(--font-mono);
 }
 
+.view-timestamps {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.ts-sep {
+  opacity: 0.5;
+}
+
+.ts-created, .ts-viewed {
+  white-space: nowrap;
+}
+
 /* ── Mutation badge ─────────────────────────────────────────────────────────── */
 .badge {
   font-size: 0.7rem;
