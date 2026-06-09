@@ -5,6 +5,18 @@ Most recent entry at the top.
 
 ---
 
+## 2026-06-09 15:51 — [kpoojary] Mutation engine — word-swap level 1 and sentence rewrite level 2
+
+- **Issue:** #5
+- **Branch:** kpoojary/mutation-engine
+- **PR:** kanikasp113/notepad-offsite#16
+- **What:** Enhanced the local mutation engine with expanded synonym table (20+ new entries), improved level-1 punctuation preservation, more level-2 sentence transforms (unreliable narrator, qualifier, citation needed), 4 new unhinged templates (patient file, recipe, breaking news, fairy tale), and a level-3 fallback for very short text
+- **Files changed:**
+  - `projects/kpoojary/mutation.js` — Expanded SYNONYMS map, fixed punctuation-stripping bug in level-1 swaps, added 3 new level-2 transforms, added 4 new unhinged templates, added short-text fallback in level-3
+- **Notes:** The mutation engine skeleton was created in PR #1 but issue #5 was never formally closed. This PR expands coverage and fixes edge cases.
+
+---
+
 ## 2026-06-09 15:44 — [kpoojary] Mutation level tracking per note
 
 - **Issue:** #4
