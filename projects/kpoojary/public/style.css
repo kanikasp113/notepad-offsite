@@ -234,10 +234,10 @@ button { cursor: pointer; font-family: inherit; font-size: 0.85rem; border-radiu
 }
 
 /* ── Mutation reveal animation ──────────────────────────────────────────────── */
-@keyframes char-flicker {
-  0%   { opacity: 0.1; transform: translateY(-1px); }
-  40%  { opacity: 0.7; }
-  100% { opacity: 1;   transform: translateY(0); }
+@keyframes word-highlight {
+  0%   { opacity: 0.1; transform: translateY(-2px); color: var(--accent); }
+  40%  { opacity: 1;   transform: translateY(0);    color: var(--accent); }
+  100% { opacity: 1;   transform: translateY(0);    color: var(--accent); }
 }
 
 .mutating .word {
@@ -245,8 +245,13 @@ button { cursor: pointer; font-family: inherit; font-size: 0.85rem; border-radiu
 }
 
 .mutating .word.changed {
-  animation: char-flicker 0.4s ease forwards;
-  color: var(--accent);
+  animation: word-highlight 0.4s ease forwards;
+}
+
+/* Fade from accent back to inherit color after animation completes */
+.word.fade-out {
+  transition: color 0.5s ease;
+  color: inherit;
 }
 
 /* ── Peek original overlay ──────────────────────────────────────────────────── */
