@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MutaNotes</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <aside id="sidebar">
+    <header>
+      <h1>MutaNotes</h1>
+      <p class="tagline">notes that drift</p>
+    </header>
+
+    <button id="btn-new" class="btn-primary">+ New Note</button>
+
+    <ul id="note-list" role="list">
+      <!-- populated by JS -->
+    </ul>
+  </aside>
+
+  <main id="main">
+    <!-- Empty state -->
+    <div id="empty-state" class="centered">
+      <p class="hint">Select a note, or create one.</p>
+      <p class="hint-sub">Every time you open a note, it changes.<br>The original is preserved — but you might forget which was real.</p>
+    </div>
+
+    <!-- Note view -->
+    <div id="note-view" class="hidden">
+      <div id="view-toolbar">
+        <span id="mutation-badge" class="badge badge-0">untouched</span>
+        <span id="view-count-label" class="view-count"></span>
+        <div class="spacer"></div>
+        <button id="btn-peek" title="Hold to see original" class="btn-ghost">👁 peek original</button>
+        <button id="btn-edit" class="btn-ghost">edit</button>
+        <button id="btn-delete" class="btn-danger-ghost">delete</button>
+      </div>
+      <h2 id="note-title-display"></h2>
+      <div id="note-body-display"></div>
+    </div>
+
+    <!-- Note editor -->
+    <div id="note-editor" class="hidden">
+      <div id="editor-toolbar">
+        <button id="btn-save" class="btn-primary">save</button>
+        <button id="btn-cancel" class="btn-ghost">cancel</button>
+      </div>
+      <input id="editor-title" type="text" placeholder="Title…" maxlength="200" autocomplete="off" />
+      <textarea id="editor-body" placeholder="Write something. It won't stay the same."></textarea>
+    </div>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
