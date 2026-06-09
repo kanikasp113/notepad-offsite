@@ -19,6 +19,12 @@ const SYNONYMS = {
   interesting: ["curious", "noteworthy", "thought-provoking", "engaging", "peculiar"],
   new: ["recent", "fresh", "novel", "current", "modern"],
   old: ["established", "longstanding", "prior", "classic", "dated"],
+  great: ["remarkable", "splendid", "exceptional", "superb", "magnificent"],
+  sure: ["certain", "confident", "convinced", "positive", "assured"],
+  right: ["correct", "accurate", "proper", "apt", "fitting"],
+  wrong: ["incorrect", "mistaken", "flawed", "erroneous", "misguided"],
+  nice: ["pleasant", "agreeable", "lovely", "charming", "delightful"],
+  strange: ["peculiar", "unusual", "odd", "curious", "bewildering"],
   // verbs
   think: ["believe", "suspect", "reckon", "suppose", "consider"],
   know: ["understand", "recognize", "gather", "appreciate", "perceive"],
@@ -32,6 +38,14 @@ const SYNONYMS = {
   start: ["begin", "initiate", "kick off", "open", "launch"],
   stop: ["halt", "cease", "discontinue", "pause", "terminate"],
   look: ["appear", "seem", "come across as", "present as", "read as"],
+  say: ["state", "declare", "mention", "remark", "assert"],
+  tell: ["inform", "advise", "notify", "relay to", "brief"],
+  give: ["provide", "offer", "supply", "deliver", "hand over"],
+  take: ["seize", "grab", "claim", "accept", "receive"],
+  find: ["discover", "locate", "uncover", "identify", "track down"],
+  try: ["attempt", "endeavor", "strive", "aim", "venture"],
+  keep: ["retain", "maintain", "hold on to", "preserve", "sustain"],
+  change: ["alter", "modify", "adjust", "revise", "transform"],
   // nouns
   thing: ["matter", "element", "item", "aspect", "subject"],
   time: ["moment", "period", "point", "interval", "occasion"],
@@ -41,6 +55,10 @@ const SYNONYMS = {
   idea: ["notion", "concept", "thought", "premise", "proposal"],
   problem: ["issue", "challenge", "concern", "complication", "matter"],
   plan: ["strategy", "approach", "scheme", "blueprint", "framework"],
+  part: ["portion", "segment", "section", "component", "piece"],
+  place: ["location", "spot", "area", "site", "venue"],
+  world: ["realm", "domain", "sphere", "landscape", "arena"],
+  fact: ["truth", "reality", "detail", "datum", "observation"],
   // adverbs
   very: ["quite", "rather", "considerably", "notably", "decidedly"],
   really: ["genuinely", "truly", "certainly", "indeed", "in fact"],
@@ -48,6 +66,10 @@ const SYNONYMS = {
   never: ["rarely", "seldom", "hardly ever", "not once", "at no point"],
   maybe: ["perhaps", "possibly", "conceivably", "it may be that", "presumably"],
   just: ["simply", "merely", "only", "precisely", "exactly"],
+  often: ["frequently", "regularly", "routinely", "commonly", "typically"],
+  also: ["additionally", "furthermore", "moreover", "likewise", "too"],
+  still: ["nevertheless", "even so", "regardless", "all the same", "yet"],
+  soon: ["shortly", "before long", "presently", "in due course", "imminently"],
 };
 
 const UNHINGED_TEMPLATES = [
@@ -77,6 +99,18 @@ const UNHINGED_TEMPLATES = [
     const sampled = words.sort(() => Math.random() - 0.5).slice(0, 5);
     return `[TRANSMISSION CORRUPTED]\n${sampled.join(" ... ")} ... [END OF RECOVERABLE DATA]`;
   },
+
+  (nouns, text) =>
+    `PATIENT FILE — DO NOT DISTRIBUTE\nSubject reports recurring thoughts about ${nouns[0] || "unspecified topics"}. When asked about ${nouns[1] || "related matters"}, subject became evasive. Recommend further observation. Session ended abruptly.`,
+
+  (nouns, text) =>
+    `RECIPE — Serves 4\nIngredients: 2 cups ${nouns[0] || "ambiguity"}, a pinch of ${nouns[1] || "denial"}, ${nouns[2] || "regret"} to taste.\nDirections: Combine ingredients. Let sit overnight. Do not stir. Serve cold with a side of existential uncertainty.`,
+
+  (nouns, text) =>
+    `BREAKING: Local sources confirm that ${nouns[0] || "the situation"} has escalated beyond initial projections. Witnesses describe ${nouns[1] || "the scene"} as "unprecedented." Officials have declined to comment. More at 11.`,
+
+  (nouns, text) =>
+    `Once upon a time, in a land governed entirely by ${nouns[0] || "rules no one understood"}, there lived a note. It knew things about ${nouns[1] || "the world"} that nobody wanted to hear. So it changed. And changed again. Until even it forgot what it once said.`,
 ];
 
 /**
@@ -98,7 +132,8 @@ function extractKeyWords(text) {
 }
 
 /**
- * Level 1: swap 1–3 words with synonyms from the lookup table.
+ * Level 1: swap 1–2 words with synonyms from the lookup table.
+ * Preserves leading capitalization and trailing punctuation.
  */
 function mutateLevel1(text) {
   const words = text.split(/(\s+)/);
@@ -108,15 +143,19 @@ function mutateLevel1(text) {
   return words
     .map((token) => {
       if (swapCount >= maxSwaps) return token;
-      const lower = token.toLowerCase().replace(/[^a-z]/g, "");
+      const punctMatch = token.match(/^([^a-zA-Z]*)(.*?)([^a-zA-Z]*)$/);
+      if (!punctMatch) return token;
+      const [, leadPunct, core, trailPunct] = punctMatch;
+      const lower = core.toLowerCase();
       const options = SYNONYMS[lower];
       if (options && Math.random() < 0.7) {
         swapCount++;
-        const replacement = options[Math.floor(Math.random() * options.length)];
+        let replacement = options[Math.floor(Math.random() * options.length)];
         // Preserve leading capital
-        return token[0] === token[0].toUpperCase() && token[0] !== token[0].toLowerCase()
-          ? replacement[0].toUpperCase() + replacement.slice(1)
-          : replacement;
+        if (core[0] === core[0].toUpperCase() && core[0] !== core[0].toLowerCase()) {
+          replacement = replacement[0].toUpperCase() + replacement.slice(1);
+        }
+        return leadPunct + replacement + trailPunct;
       }
       return token;
     })
@@ -150,6 +189,12 @@ function mutateLevel2(text) {
       s.replace(/\bI\b/g, "one").replace(/\bmy\b/gi, "one's").replace(/\bme\b/gi, "one"),
     // Future tense shift
     (s) => s.replace(/\b(is|are)\b/i, (m) => `will be`),
+    // Unreliable narrator
+    (s) => s.trim() + " At least, that's the version I'm going with.",
+    // Unnecessary qualifier
+    (s) => `For reasons that may or may not be clear, ` + s[0].toLowerCase() + s.slice(1),
+    // Footnote style
+    (s) => s.trimEnd().replace(/[.!?]$/, "") + " [citation needed].",
   ];
 
   // Pick a random sentence to transform
@@ -162,9 +207,13 @@ function mutateLevel2(text) {
 
 /**
  * Level 3: fully unhinged — extract key words and apply an unhinged template.
+ * Falls back to level 2 if text is too short for meaningful keyword extraction.
  */
 function mutateLevel3(text) {
   const keywords = extractKeyWords(text);
+  if (keywords.length === 0) {
+    return mutateLevel2(text);
+  }
   const template = UNHINGED_TEMPLATES[Math.floor(Math.random() * UNHINGED_TEMPLATES.length)];
   return template(keywords, text);
 }
