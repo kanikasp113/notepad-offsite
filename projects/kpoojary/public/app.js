@@ -340,7 +340,12 @@ function escapeHtml(str) {
 
 function formatDate(iso) {
   if (!iso) return "";
-  const d = new Date(iso + "Z"); // SQLite stores UTC without Z
+  // Append "Z" only when the string lacks a timezone indicator.
+  // ISO strings from toISOString() already end with "Z"; appending again
+  // produces an invalid date ("...ZZ").
+  const hasTimezone = /Z|[+-]\d{2}:\d{2}$/.test(iso);
+  const d = new Date(hasTimezone ? iso : iso + "Z");
+  if (isNaN(d.getTime())) return "";
   return d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
 }
 
