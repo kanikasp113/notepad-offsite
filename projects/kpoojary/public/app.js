@@ -175,8 +175,7 @@ function renderList() {
     li.setAttribute("role", "button");
     li.setAttribute("tabindex", "0");
 
-    // Infer approximate last known level from view_count (sidebar doesn't call /api/notes/:id)
-    const level = n.view_count === 0 ? 0 : n.view_count <= 2 ? 1 : n.view_count <= 5 ? 2 : 3;
+    const level = n.mutation_level ?? 0;
 
     li.innerHTML = `
       <div class="note-list-title">
@@ -184,6 +183,7 @@ function renderList() {
       </div>
       <div class="note-list-meta">
         <span>${formatDate(n.updated_at)}</span>
+        <span class="level-label level-label-${level}">${levelLabel(level)}</span>
         <span>${n.view_count} view${n.view_count !== 1 ? "s" : ""}</span>
       </div>`;
 
