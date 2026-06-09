@@ -5,6 +5,18 @@ Most recent entry at the top.
 
 ---
 
+## 2026-06-09 16:00 — [kpoojary] Fix invalid date display in note sidebar
+
+- **Issue:** #15
+- **Branch:** kpoojary/fix-invalid-date
+- **PR:** kanikasp113/notepad-offsite#17
+- **What:** Fixed `formatDate()` appending "Z" unconditionally, which caused "Invalid Date" when the ISO string already contained a timezone suffix
+- **Files changed:**
+  - `projects/kpoojary/public/app.js` — `formatDate()` now checks for existing timezone indicator before appending "Z"; also returns empty string for unparseable dates
+- **Notes:** The JSON file store uses `new Date().toISOString()` which includes "Z", so the old code produced strings like "...ZZ" → Invalid Date.
+
+---
+
 ## 2026-06-09 15:51 — [kpoojary] Mutation engine — word-swap level 1 and sentence rewrite level 2
 
 - **Issue:** #5
