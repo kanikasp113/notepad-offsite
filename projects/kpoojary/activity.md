@@ -5,6 +5,18 @@ Most recent entry at the top.
 
 ---
 
+## 2026-06-09 15:32 — [kpoojary] Peek original feature
+
+- **Issue:** #3
+- **Branch:** kpoojary/peek-original
+- **PR:** kanikasp113/notepad-offsite#13
+- **What:** Fixed hold-to-peek vs click conflict so the peek button works both as a toggle (click to open, click outside/Escape to close) and as hold-to-peek (hold to show, release to hide) without the trailing click reopening the overlay
+- **Files changed:**
+  - `projects/kpoojary/public/app.js` — Replaced conflicting click+mousedown/mouseup handlers with a `peekHeld` flag that suppresses the click after a hold gesture
+- **Notes:** The peek overlay, original API endpoint, and Escape-to-close were already implemented in PR #1. This PR fixes the interaction bug and formally closes issue #3.
+
+---
+
 ## 2026-06-09 15:24 — [kpoojary] Mutation animation — highlight changed words on view
 
 - **Issue:** #2
