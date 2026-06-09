@@ -351,6 +351,28 @@ function formatDate(iso) {
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 (async () => {
+  initTheme();
   notes = await fetchNotes();
   renderList();
 })();
+
+// ── Theme switcher ────────────────────────────────────────────────────────────
+function initTheme() {
+  const saved = localStorage.getItem("mutanotes-theme") || "";
+  applyTheme(saved);
+
+  document.getElementById("theme-picker").addEventListener("click", (e) => {
+    const swatch = e.target.closest(".theme-swatch");
+    if (!swatch) return;
+    const theme = swatch.dataset.theme;
+    applyTheme(theme);
+    localStorage.setItem("mutanotes-theme", theme);
+  });
+}
+
+function applyTheme(theme) {
+  document.documentElement.setAttribute("data-theme", theme);
+  document.querySelectorAll(".theme-swatch").forEach((el) => {
+    el.classList.toggle("active", el.dataset.theme === theme);
+  });
+}

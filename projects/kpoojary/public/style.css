@@ -366,3 +366,102 @@ button { cursor: pointer; font-family: inherit; font-size: 0.85rem; border-radiu
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* ── Theme: Fog ────────────────────────────────────────────────────────────── */
+[data-theme="fog"] {
+  --bg:        #f0eeeb;
+  --bg2:       #e4e1dc;
+  --bg3:       #d8d4ce;
+  --border:    #c5c0b8;
+  --text:      #3a3632;
+  --text-dim:  #8a8580;
+  --accent:    #6b8fa3;
+  --accent2:   #4e7a92;
+  --danger:    #c0392b;
+  --green:     #27ae60;
+  --yellow:    #b8860b;
+  --orange:    #d35400;
+  --red:       #c0392b;
+}
+
+/* ── Theme: Terminal ───────────────────────────────────────────────────────── */
+[data-theme="terminal"] {
+  --bg:        #000000;
+  --bg2:       #0a0a0a;
+  --bg3:       #141414;
+  --border:    #1e3a1e;
+  --text:      #33ff33;
+  --text-dim:  #1a991a;
+  --accent:    #33ff33;
+  --accent2:   #20cc20;
+  --danger:    #ff3333;
+  --green:     #33ff33;
+  --yellow:    #ccff33;
+  --orange:    #ffaa33;
+  --red:       #ff3333;
+}
+
+/* ── Theme: Dusk ───────────────────────────────────────────────────────────── */
+[data-theme="dusk"] {
+  --bg:        #0d1b2a;
+  --bg2:       #132438;
+  --bg3:       #1a2e45;
+  --border:    #243b55;
+  --text:      #d4a574;
+  --text-dim:  #7a6a55;
+  --accent:    #e8a838;
+  --accent2:   #c48820;
+  --danger:    #e74c3c;
+  --green:     #58b368;
+  --yellow:    #e8a838;
+  --orange:    #e07020;
+  --red:       #e74c3c;
+}
+
+/* ── Theme: Blood ──────────────────────────────────────────────────────────── */
+[data-theme="blood"] {
+  --bg:        #1a0808;
+  --bg2:       #240e0e;
+  --bg3:       #2e1414;
+  --border:    #4a1c1c;
+  --text:      #e8d0d0;
+  --text-dim:  #8a5555;
+  --accent:    #dc3545;
+  --accent2:   #b02a37;
+  --danger:    #ff4444;
+  --green:     #66bb6a;
+  --yellow:    #ffca28;
+  --orange:    #ff7043;
+  --red:       #ff1744;
+}
+
+/* ── Theme picker ──────────────────────────────────────────────────────────── */
+#theme-picker {
+  display: flex;
+  gap: 6px;
+  padding: 4px 0;
+}
+
+#theme-picker .theme-swatch {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: border-color 0.15s, transform 0.15s;
+  padding: 0;
+}
+
+#theme-picker .theme-swatch:hover {
+  transform: scale(1.15);
+}
+
+#theme-picker .theme-swatch.active {
+  border-color: var(--accent);
+}
+
+.swatch-void     { background: #a78bfa; }
+.swatch-fog      { background: #6b8fa3; }
+.swatch-terminal { background: #33ff33; }
+.swatch-dusk     { background: #e8a838; }
+.swatch-blood    { background: #dc3545; }
