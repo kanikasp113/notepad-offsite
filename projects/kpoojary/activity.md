@@ -5,6 +5,20 @@ Most recent entry at the top.
 
 ---
 
+## 2026-06-09 16:09 — [kpoojary] Color scheme selector — 5 themes
+
+- **Issue:** #18
+- **Branch:** kpoojary/color-themes
+- **PR:** kanikasp113/notepad-offsite#21
+- **What:** Added 5 switchable color themes (Void, Fog, Terminal, Dusk, Blood) with localStorage persistence and a swatch picker in the sidebar
+- **Files changed:**
+  - `projects/kpoojary/public/style.css` — Added CSS variable overrides for 4 new themes via `[data-theme]` selectors, plus theme picker styles
+  - `projects/kpoojary/public/index.html` — Added theme swatch picker to sidebar bottom
+  - `projects/kpoojary/public/app.js` — Added `initTheme()` / `applyTheme()` with localStorage persistence
+- **Notes:** Theme switches instantly via CSS custom properties with no page reload. The mutation badge, unhinged glow, and all UI elements inherit theme colors through existing CSS variables.
+
+---
+
 ## 2026-06-09 16:00 — [kpoojary] Fix invalid date display in note sidebar
 
 - **Issue:** #15
