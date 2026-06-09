@@ -5,6 +5,20 @@ Most recent entry at the top.
 
 ---
 
+## 2026-06-09 15:44 — [kpoojary] Mutation level tracking per note
+
+- **Issue:** #4
+- **Branch:** kpoojary/mutation-level-tracking
+- **PR:** kanikasp113/notepad-offsite#14
+- **What:** Added `mutation_level` to list and original API responses so the sidebar can display the level name (untouched/subtle/moderate/unhinged) alongside the colored dot, making mutation progression visible at a glance
+- **Files changed:**
+  - `projects/kpoojary/server.js` — Extracted `baseLevelForViewCount` helper; added `mutation_level` to list and original endpoints
+  - `projects/kpoojary/public/app.js` — Sidebar now uses server-provided `mutation_level` and shows level name label
+  - `projects/kpoojary/public/style.css` — Added `.level-label` styles with per-level colors
+- **Notes:** The core level calculation, 15% escalation, badge pulse, and view_count reset were already in place. This PR surfaces the level in list/original responses and makes it visible in the sidebar.
+
+---
+
 ## 2026-06-09 15:32 — [kpoojary] Peek original feature
 
 - **Issue:** #3

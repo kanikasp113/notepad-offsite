@@ -27,8 +27,12 @@ function saveDB(db) {
 // 3–5      → level 2 (moderate)
 // 6+       → level 3 (unhinged)
 // +15% random escalation for surprise
+function baseLevelForViewCount(count) {
+  return count === 0 ? 0 : count <= 2 ? 1 : count <= 5 ? 2 : 3;
+}
+
 function levelForViewCount(count) {
-  let base = count === 0 ? 0 : count <= 2 ? 1 : count <= 5 ? 2 : 3;
+  let base = baseLevelForViewCount(count);
   if (base < 3 && Math.random() < 0.15) base = Math.min(base + 1, 3);
   return base;
 }
@@ -44,7 +48,9 @@ app.use(express.static(path.join(__dirname, "public")));
 app.get("/api/notes", (_req, res) => {
   const db = loadDB();
   const summary = db.notes.map(({ id, title, view_count, created_at, updated_at }) => ({
-    id, title, view_count, created_at, updated_at,
+    id, title, view_count,
+    mutation_level: baseLevelForViewCount(view_count),
+    created_at, updated_at,
   }));
   res.json(summary.sort((a, b) => b.updated_at.localeCompare(a.updated_at)));
 });
@@ -95,7 +101,11 @@ app.get("/api/notes/:id/original", (req, res) => {
   const db = loadDB();
   const note = db.notes.find((n) => n.id === parseInt(req.params.id, 10));
   if (!note) return res.status(404).json({ error: "Note not found" });
-  res.json({ id: note.id, title: note.title, body: note.body, view_count: note.view_count });
+  res.json({
+    id: note.id, title: note.title, body: note.body,
+    view_count: note.view_count,
+    mutation_level: baseLevelForViewCount(note.view_count),
+  });
 });
 
 // Update a note — resets view_count (you wrote something new)
