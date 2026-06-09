@@ -5,6 +5,21 @@ Most recent entry at the top.
 
 ---
 
+## 2026-06-09 16:17 — [kpoojary] Show timestamp on notes — created and last viewed time
+
+- **Issue:** #19
+- **Branch:** kpoojary/note-timestamps
+- **PR:** kanikasp113/notepad-offsite#22
+- **What:** Added relative timestamps to the sidebar and absolute/relative timestamps to the note view toolbar, with live refresh every 60 seconds
+- **Files changed:**
+  - `projects/kpoojary/server.js` — Added `last_viewed_at` field set on each view; included in list and view responses
+  - `projects/kpoojary/public/app.js` — Added `relativeTime()` and `formatAbsoluteDate()` helpers; sidebar shows relative time; toolbar shows "Created … at …" and "Last viewed … ago"; 60s setInterval refreshes timestamps
+  - `projects/kpoojary/public/index.html` — Added `#note-timestamps` span in view toolbar
+  - `projects/kpoojary/public/style.css` — Added `.view-timestamps`, `.ts-created`, `.ts-viewed`, `.ts-sep` styles
+- **Notes:** Existing notes without `last_viewed_at` gracefully show null until first view. The `formatDate()` function was refactored to use `relativeTime()` internally.
+
+---
+
 ## 2026-06-09 16:09 — [kpoojary] Color scheme selector — 5 themes
 
 - **Issue:** #18

@@ -47,10 +47,10 @@ app.use(express.static(path.join(__dirname, "public")));
 // List all notes (no body, no mutation)
 app.get("/api/notes", (_req, res) => {
   const db = loadDB();
-  const summary = db.notes.map(({ id, title, view_count, created_at, updated_at }) => ({
+  const summary = db.notes.map(({ id, title, view_count, created_at, updated_at, last_viewed_at }) => ({
     id, title, view_count,
     mutation_level: baseLevelForViewCount(view_count),
-    created_at, updated_at,
+    created_at, updated_at, last_viewed_at: last_viewed_at || null,
   }));
   res.json(summary.sort((a, b) => b.updated_at.localeCompare(a.updated_at)));
 });
@@ -84,6 +84,7 @@ app.get("/api/notes/:id", (req, res) => {
   const level = levelForViewCount(note.view_count);
   note.view_count += 1;
   note.updated_at = nowIso();
+  note.last_viewed_at = nowIso();
   saveDB(db);
 
   res.json({
@@ -93,6 +94,7 @@ app.get("/api/notes/:id", (req, res) => {
     mutation_level: level,
     view_count: note.view_count,
     created_at: note.created_at,
+    last_viewed_at: note.last_viewed_at,
   });
 });
 
