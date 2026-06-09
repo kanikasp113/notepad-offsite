@@ -67,10 +67,23 @@ function mutationBadgeClass(level) {
 }
 
 // ── Mutation reveal animation ─────────────────────────────────────────────────
-// Wraps each word in a span; words that differ from original get .changed class.
-function animateMutation(container, newText, prevText) {
+// Per-note cache of the last displayed body text for accurate word diffs.
+const lastBodyCache = {};
+
+// Wraps each word in a span; words that differ from previous view get .changed
+// class with staggered animation. Skipped entirely at level 0 (first view).
+function animateMutation(container, newText, noteId, mutationLevel) {
+  const prevText = lastBodyCache[noteId] || "";
+  lastBodyCache[noteId] = newText;
+
+  // Level 0 — show as-is, no animation
+  if (mutationLevel === 0) {
+    container.textContent = newText;
+    return;
+  }
+
   const newWords  = newText.split(" ");
-  const prevWords = (prevText || "").split(" ");
+  const prevWords = prevText.split(" ");
 
   container.innerHTML = "";
   container.classList.add("mutating");
@@ -81,13 +94,26 @@ function animateMutation(container, newText, prevText) {
     span.textContent = word + (i < newWords.length - 1 ? " " : "");
     if (word !== prevWords[i]) {
       span.classList.add("changed");
-      // stagger
       span.style.animationDelay = `${Math.min(i * 15, 600)}ms`;
     }
     container.appendChild(span);
   });
 
-  setTimeout(() => container.classList.remove("mutating"), 1500);
+  // After animation completes, remove .changed so words transition to normal color
+  setTimeout(() => {
+    container.querySelectorAll(".word.changed").forEach((el) => {
+      el.classList.add("fade-out");
+      el.classList.remove("changed");
+    });
+  }, 1000);
+
+  // Clean up all animation classes
+  setTimeout(() => {
+    container.classList.remove("mutating");
+    container.querySelectorAll(".word.fade-out").forEach((el) => {
+      el.classList.remove("fade-out");
+    });
+  }, 1500);
 }
 
 // ── API calls ─────────────────────────────────────────────────────────────────
@@ -168,8 +194,6 @@ function renderList() {
 }
 
 // ── Open / view a note ────────────────────────────────────────────────────────
-let lastBodyText = "";
-
 async function openNote(id) {
   if (isEditing && activeId === id) return;
   isEditing = false;
@@ -185,8 +209,7 @@ async function openNote(id) {
 
   bodyDisplay.classList.toggle("unhinged", note.mutation_level === 3);
 
-  animateMutation(bodyDisplay, note.body, lastBodyText);
-  lastBodyText = note.body;
+  animateMutation(bodyDisplay, note.body, id, note.mutation_level);
 
   setPanel(noteView);
 
@@ -241,8 +264,8 @@ async function handleDelete() {
   const note = notes.find((n) => n.id === activeId);
   if (!confirm(`Delete "${note?.title ?? "this note"}"?`)) return;
   await deleteNote(activeId);
+  delete lastBodyCache[activeId];
   activeId = null;
-  lastBodyText = "";
   notes = await fetchNotes();
   renderList();
   setPanel(null);

@@ -5,6 +5,19 @@ Most recent entry at the top.
 
 ---
 
+## 2026-06-09 15:24 — [kpoojary] Mutation animation — highlight changed words on view
+
+- **Issue:** #2
+- **Branch:** kpoojary/mutation-animation
+- **PR:** kanikasp113/notepad-offsite#12
+- **What:** Refined the mutation word-diff animation so it only fires at level 1+, tracks previous body per-note (not globally), and smoothly fades changed words from accent purple back to normal color within 1.5 seconds
+- **Files changed:**
+  - `projects/kpoojary/public/app.js` — Per-note lastBodyCache, mutation_level-aware animateMutation, fade-out class scheduling
+  - `projects/kpoojary/public/style.css` — word-highlight keyframes with color in animation, .fade-out transition for smooth purple→normal fade
+- **Notes:** Level 0 now shows text as-is with no spans/animation. Switching between notes no longer causes false word diffs. The unhinged red tint on the container was already implemented.
+
+---
+
 ## 2026-06-09 15:12 — [kpoojary] Core note CRUD — create, read, update, delete
 
 - **Issue:** #1
