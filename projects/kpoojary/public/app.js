@@ -206,7 +206,8 @@ async function openNote(id) {
   titleDisplay.textContent = note.title;
   mutationBadge.className = mutationBadgeClass(note.mutation_level);
   mutationBadge.textContent = levelLabel(note.mutation_level);
-  viewCountLabel.textContent = `view #${note.view_count}`;
+  viewCountLabel.textContent = `view #${note.view_count}` +
+    (note.cycle > 0 ? ` · cycle ${note.cycle}` : "");
 
   const createdStr = formatAbsoluteDate(note.created_at);
   const viewedStr = note.last_viewed_at ? relativeTime(note.last_viewed_at) : "just now";

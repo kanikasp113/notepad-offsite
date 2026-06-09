@@ -21,14 +21,24 @@ function saveDB(db) {
   fs.writeFileSync(DB_FILE, JSON.stringify(db, null, 2), "utf8");
 }
 
-// ── Mutation level from view_count ────────────────────────────────────────────
+// ── Cyclic mutation level from view_count ─────────────────────────────────────
 // 0 views  → level 0 (untouched)
-// 1–2      → level 1 (subtle)
-// 3–5      → level 2 (moderate)
-// 6+       → level 3 (unhinged)
+// After that, levels cycle every 10 views:
+//   position 0–1 → level 1 (subtle)
+//   position 2–5 → level 2 (moderate)
+//   position 6–9 → level 3 (unhinged)
 // +15% random escalation for surprise
 function baseLevelForViewCount(count) {
-  return count === 0 ? 0 : count <= 2 ? 1 : count <= 5 ? 2 : 3;
+  if (count === 0) return 0;
+  const position = (count - 1) % 10;
+  if (position <= 1) return 1;
+  if (position <= 5) return 2;
+  return 3;
+}
+
+function cycleForViewCount(count) {
+  if (count === 0) return 0;
+  return Math.floor((count - 1) / 10) + 1;
 }
 
 function levelForViewCount(count) {
@@ -50,6 +60,7 @@ app.get("/api/notes", (_req, res) => {
   const summary = db.notes.map(({ id, title, view_count, created_at, updated_at, last_viewed_at }) => ({
     id, title, view_count,
     mutation_level: baseLevelForViewCount(view_count),
+    cycle: cycleForViewCount(view_count),
     created_at, updated_at, last_viewed_at: last_viewed_at || null,
   }));
   res.json(summary.sort((a, b) => b.updated_at.localeCompare(a.updated_at)));
@@ -92,6 +103,7 @@ app.get("/api/notes/:id", (req, res) => {
     title: note.title,
     body: mutate(note.body, level),
     mutation_level: level,
+    cycle: cycleForViewCount(note.view_count),
     view_count: note.view_count,
     created_at: note.created_at,
     last_viewed_at: note.last_viewed_at,
@@ -107,6 +119,7 @@ app.get("/api/notes/:id/original", (req, res) => {
     id: note.id, title: note.title, body: note.body,
     view_count: note.view_count,
     mutation_level: baseLevelForViewCount(note.view_count),
+    cycle: cycleForViewCount(note.view_count),
   });
 });
 

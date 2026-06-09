@@ -5,6 +5,20 @@ Most recent entry at the top.
 
 ---
 
+## 2026-06-09 16:25 — [kpoojary] Cyclic mutation levels — reset after every 10 views
+
+- **Issue:** #20
+- **Branch:** kpoojary/cyclic-mutation
+- **PR:** kanikasp113/notepad-offsite#23
+- **What:** Mutation levels now cycle every 10 views instead of permanently sticking at unhinged; the cycle number is displayed in the view toolbar
+- **Files changed:**
+  - `projects/kpoojary/server.js` — Rewrote `baseLevelForViewCount()` with cyclic formula `(view_count - 1) % 10`, added `cycleForViewCount()`, included `cycle` in list/view/original API responses
+  - `projects/kpoojary/public/app.js` — View toolbar shows "cycle N" next to view count
+  - `projects/kpoojary/activity.md` — This entry
+- **Notes:** The 15% random escalation chance is preserved within each cycle. Cycle 0 means untouched (0 views). The formula matches the issue spec exactly.
+
+---
+
 ## 2026-06-09 16:17 — [kpoojary] Show timestamp on notes — created and last viewed time
 
 - **Issue:** #19
